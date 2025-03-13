@@ -1,0 +1,35 @@
+name: Code Checker (Backend)
+
+on:
+  pull_request:
+    branches: [ dev, main ]
+  push:
+    branches: [ dev, main ]
+
+jobs:
+  lint-security-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Lint (flake8) and Format Check (black)
+        run: |
+          black --check .
+          flake8 .
+
+      - name: Security Scan (Bandit)
+        run: |
+          pip install bandit
+          bandit -r .
